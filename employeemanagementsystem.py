@@ -1,183 +1,119 @@
-# importing mysql connector
 import mysql.connector
 
-# making Connection
-con = mysql.connector.connect(host="localhost", user="root", password="password", database="emp")
-mycursor = con.cursor()
-# creating table
-mycursor.execute("CREATE DATABASE emp")
+# Function to establish database connection
+def connect_to_database():
+    try:
+        con = mysql.connector.connect(
+            host='localhost',
+            port='3306',
+            user='root',
+            password='password',
+            database='emp'
+        )
+        return con
+    except mysql.connector.Error as e:
+        print(f"Error connecting to database: {e}")
+        return None
 
-# Function to mAdd_Employee
-def Add_Employ():
+# Function to create database and table
+def create_database_and_table(con):
+    try:
+        cursor = con.cursor()
+        cursor.execute("CREATE DATABASE IF NOT EXISTS emp")
+        cursor.execute("USE emp")
+        cursor.execute("CREATE TABLE IF NOT EXISTS empd (id INT PRIMARY KEY, name VARCHAR(255), post VARCHAR(255), salary DECIMAL)")
+        con.commit()
+        print("Database and table created successfully")
+    except mysql.connector.Error as e:
+        print(f"Error creating database/table: {e}")
 
-	Id = input("Enter Employee Id : ")
-	
-	# Checking if Employee with given Id 
-	# Already Exist or Not
-	if(check_employee(Id) == True):
-		print("Employee already exists\nTry Again\n")
-		menu()
-		
-	else:
-		Name = input("Enter Employee Name : ")
-		Post = input("Enter Employee Post : ")
-		Salary = input("Enter Employee Salary : ")
-		data = (Id, Name, Post, Salary)
-	
-		# Inserting Employee details in 
-		# the Employee Table
-		sql = 'insert into empd values(%s,%s,%s,%s)'
-		c = con.cursor()
-		
-		# Executing the SQL Query
-		c.execute(sql, data)
-		
-		# commit() method to make changes in
-		# the table
-		con.commit()
-		print("Employee Added Successfully ")
-		menu()
+# Function to add an employee
+def add_employee(con):
+    try:
+        cursor = con.cursor()
+        id = int(input("Enter Employee Id : "))
+        name = input("Enter Employee Name : ")
+        post = input("Enter Employee Post : ")
+        salary = float(input("Enter Employee Salary : "))
+        cursor.execute("INSERT INTO empd (id, name, post, salary) VALUES (%s, %s, %s, %s)", (id, name, post, salary))
+        con.commit()
+        print("Employee added successfully")
+    except mysql.connector.Error as e:
+        print(f"Error adding employee: {e}")
 
-# Function to Promote Employee
-def Promote_Employee():
-	Id = int(input("Enter Employ's Id"))
-	
-	# Checking if Employee with given Id 
-	# Exist or Not
-	if(check_employee(Id) == False):
-		print("Employee does not exists\nTry Again\n")
-		menu()
-	else:
-		Amount = int(input("Enter increase in Salary"))
-		
-		# Query to Fetch Salary of Employee 
-		# with given Id
-		sql = 'select salary from empd where id=%s'
-		data = (Id,)
-		c = con.cursor()
-		
-		# Executing the SQL Query
-		c.execute(sql, data)
-		
-		# Fetching Salary of Employee with given Id
-		r = c.fetchone()
-		t = r[0]+Amount
-		
-		# Query to Update Salary of Employee with
-		# given Id
-		sql = 'update empd set salary=%s where id=%s'
-		d = (t, Id)
-		
-		# Executing the SQL Query
-		c.execute(sql, d)
-		
-		# commit() method to make changes in the table
-		con.commit()
-		print("Employee Promoted")
-		menu()
+# Function to remove an employee
+def remove_employee(con):
+    try:
+        cursor = con.cursor()
+        id = int(input("Enter Employee Id to remove: "))
+        cursor.execute("DELETE FROM empd WHERE id = %s", (id,))
+        con.commit()
+        print("Employee removed successfully")
+    except mysql.connector.Error as e:
+        print(f"Error removing employee: {e}")
 
-# Function to Remove Employee with given Id
-def Remove_Employ():
-	Id = input("Enter Employee Id : ")
-	
-	# Checking if Employee with given Id Exist
-	# or Not
-	if(check_employee(Id) == False):
-		print("Employee does not exists\nTry Again\n")
-		menu()
-	else:
-		
-		# Query to Delete Employee from Table
-		sql = 'delete from empd where id=%s'
-		data = (Id,)
-		c = con.cursor()
-		
-		# Executing the SQL Query
-		c.execute(sql, data)
-		
-		# commit() method to make changes in 
-		# the table
-		con.commit()
-		print("Employee Removed")
-		menu()
+# Function to promote an employee
+def promote_employee(con):
+    try:
+        cursor = con.cursor()
+        id = int(input("Enter Employee Id to promote: "))
+        amount = float(input("Enter increase in Salary: "))
+        cursor.execute("SELECT salary FROM empd WHERE id = %s", (id,))
+        current_salary = cursor.fetchone()[0]
+        new_salary = current_salary + amount
+        cursor.execute("UPDATE empd SET salary = %s WHERE id = %s", (new_salary, id))
+        con.commit()
+        print("Employee promoted successfully")
+    except mysql.connector.Error as e:
+        print(f"Error promoting employee: {e}")
 
+# Function to display all employees
+def display_employees(con):
+    try:
+        cursor = con.cursor()
+        cursor.execute("SELECT * FROM empd")
+        employees = cursor.fetchall()
+        for employee in employees:
+            print("Employee Id:", employee[0])
+            print("Employee Name:", employee[1])
+            print("Employee Post:", employee[2])
+            print("Employee Salary:", employee[3])
+            print("---------------------")
+    except mysql.connector.Error as e:
+        print(f"Error displaying employees: {e}")
 
-# Function To Check if Employee with
-# given Id Exist or Not
-def check_employee(employee_id):
-	
-	# Query to select all Rows f
-	# rom employee Table
-	sql = 'select * from empd where id=%s'
-	
-	# making cursor buffered to make
-	# rowcount method work properly
-	c = con.cursor(buffered=True)
-	data = (employee_id,)
-	
-	# Executing the SQL Query
-	c.execute(sql, data)
-	
-	# rowcount method to find
-	# number of rows with given values
-	r = c.rowcount
-	if r == 1:
-		return True
-	else:
-		return False
+# Main menu function
+def menu(con):
+    while True:
+        print("\nWelcome to Employee Management Record")
+        print("1. Add Employee")
+        print("2. Remove Employee")
+        print("3. Promote Employee")
+        print("4. Display Employees")
+        print("5. Exit")
 
-# Function to Display All Employees
-# from Employee Table
-def Display_Employees():
-	
-	# query to select all rows from 
-	# Employee Table
-	sql = 'select * from empd'
-	c = con.cursor()
-	
-	# Executing the SQL Query
-	c.execute(sql)
-	
-	# Fetching all details of all the
-	# Employees
-	r = c.fetchall()
-	for i in r:
-		print("Employee Id : ", i[0])
-		print("Employee Name : ", i[1])
-		print("Employee Post : ", i[2])
-		print("Employee Salary : ", i[3])
-		print("---------------------\
-		-----------------------------\
-		------------------------------\
-		---------------------")
-		
-	menu()
+        choice = input("Enter your choice: ")
 
-# menu function to display menu
-def menu():
-	print("Welcome to Employee Management Record")
-	print("Press ")
-	print("1 to Add Employee")
-	print("2 to Remove Employee ")
-	print("3 to Promote Employee")
-	print("4 to Display Employees")
-	print("5 to Exit")
+        if choice == '1':
+            add_employee(con)
+        elif choice == '2':
+            remove_employee(con)
+        elif choice == '3':
+            promote_employee(con)
+        elif choice == '4':
+            display_employees(con)
+        elif choice == '5':
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
-	ch = int(input("Enter your Choice "))
-	if ch == 1:
-		Add_Employ()
-	elif ch == 2:
-		Remove_Employ()
-	elif ch == 3:
-		Promote_Employee()
-	elif ch == 4:
-		Display_Employees()
-	elif ch == 5:
-		exit(0)
-	else:
-		print("Invalid Choice")
-		menu()
+# Main function
+def main():
+    con = connect_to_database()
+    if con:
+        create_database_and_table(con)
+        menu(con)
+        con.close()
 
-
-# Calling menu function
-menu()
+if __name__ == "__main__":
+    main()
