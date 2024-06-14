@@ -8,7 +8,7 @@ The Employee Management System is a Python CLI application that allows users to 
 
 git clone https://github.com/jeangathoni8/EMS
 
-cd employee_management_system
+cd EMS
 
 ### Set up the virtual environment:
 pipenv install
