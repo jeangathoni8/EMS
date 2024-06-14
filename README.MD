@@ -2,44 +2,19 @@
 ## Description
 The Employee Management System is a Python CLI application that allows users to manage employees and their departments. This system includes functionalities to add, delete, and view employees and departments, along with assigning employees to specific departments.
 
-### Features
-Add, delete, and view employees.
-Add, delete, and view departments.
-Assign employees to departments.
-View employees by department.
-Comprehensive input validation and error handling.
-Project Structure
-markdown
-Copy code
-employee_management_system/
-│
-├── README.md
-├── Pipfile
-├── main.py
-├── models/
-│   ├── __init__.py
-│   ├── department.py
-│   └── employee.py
-├── cli/
-│   ├── __init__.py
-│   ├── menu.py
-│   └── utils.py
-└── database/
-    ├── __init__.py
-    └── setup.py
 ## Setup and Installation
+
 ### Clone the repository:
 
-sh
-Copy code
-git clone https://github.com/yourusername/employee_management_system.git
+git clone https://github.com/jeangathoni8/EMS
+
 cd employee_management_system
+
 ### Set up the virtual environment:
 pipenv install
 
 ### Activate the virtual environment:
 pipenv shell
-
 
 # Usage
 
@@ -47,26 +22,13 @@ pipenv shell
 
 python employeemanagementsystem.py
 
-### Follow the on-screen menu options to manage employees and departments:
+### Follow the on-screen menu options to manage employees
 
 Main Menu
 Add a Employee
 Remove a Employee
 Promote a Employee
 Display a Employee
-
-
-Displays a list of all employees with their respective details.
-Models
-Department
-id: Primary Key
-name: String (unique, not null)
-description: String (optional)
-Employee
-id: Primary Key
-name: String (not null)
-email: String (unique, not null)
-department_id: Foreign Key referencing Department.id
 
 # ORM Methods
 Department
@@ -94,8 +56,8 @@ Open a Pull Request.
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 Contact
-Your Name - @your_twitter - your_email@example.com
+Your Name - Jean Gathoni
 
-Project Link: https://github.com/yourusername/employee_management_system
+Project Link: https://github.com/jeangathoni8/EMS
 
 
